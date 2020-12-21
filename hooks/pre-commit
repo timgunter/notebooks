@@ -2,8 +2,12 @@
 JUPYTER="/c/ProgramData/Anaconda3/Scripts/jupyter"
 
 
-[ "$(git diff --cached --name-only **/*.ipynb|wc -l)" == 0 ] && exit 0
+[ "$(git diff --cached --name-only **/*.ipynb|wc -l)" == 0 ] && {
+    echo "No notebook files in index, allowing commit"
+    exit 0
+}
 
-$JUPYTER nbconvert --ClearOutputPreprocessor.enabled=True --inplace $(git diff --cached --name-only **/*.ipynb) \
+echo -e "Stripping notebook output from:\n$(git diff --cached --name-only **/*.ipynb|wc -l)" \
+&& $JUPYTER nbconvert --ClearOutputPreprocessor.enabled=True --inplace $(git diff --cached --name-only **/*.ipynb) \
 && git add $(git diff --cached --name-only) \
 && exit $?
